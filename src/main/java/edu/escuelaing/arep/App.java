@@ -3,6 +3,7 @@ package edu.escuelaing.arep;
 import edu.escuelaing.arep.services.IHasher;
 import edu.escuelaing.arep.services.impl.Hasher;
 import edu.escuelaing.arep.utils.Password;
+import edu.escuelaing.arep.utils.SecureURLReader;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,18 +43,19 @@ public class App {
      */
     public static void main(String[] args) {
         //API: secure(keystoreFilePath, keystorePassword, truststoreFilePath,truststorePassword);
-        secure(getKeyStore(), Password.keyStorePassword, "", "");
+        secure(getKeyStore(), Password.keyStorePassword, null, null);
 
         //Setting the portNumber
         port(getPort());
+
+        // Connect securely to the server
+        //SecureURLReader.connectSecurely();
 
         //Fake DataBase
         generateUsers();
 
         // Set the file location
         staticFileLocation("/public");
-
-        secure(getKeyStore(), "password", null, null);
 
         //After-filters are evaluated after each request, and can read the request and read/modify the response:
         // Allow CORS
