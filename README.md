@@ -30,4 +30,4 @@ https://aws.amazon.com/es/serverless/build-a-web-app/
 
 ## Arquitectura propuesta
 
-<img src="../resources/images/01-Arquitectura.jpg" />
+<img src="./resources/images/01-Arquitectura.jpg" />
