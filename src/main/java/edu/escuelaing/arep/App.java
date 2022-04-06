@@ -2,6 +2,7 @@ package edu.escuelaing.arep;
 
 import edu.escuelaing.arep.services.IHasher;
 import edu.escuelaing.arep.services.impl.Hasher;
+import edu.escuelaing.arep.utils.Password;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,7 +42,7 @@ public class App {
      */
     public static void main(String[] args) {
         //API: secure(keystoreFilePath, keystorePassword, truststoreFilePath,truststorePassword);
-        secure("", "", "", "");
+        secure(getKeyStore(), Password.keyStorePassword, "", "");
 
         //Setting the portNumber
         port(getPort());

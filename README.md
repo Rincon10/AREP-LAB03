@@ -40,26 +40,68 @@ https://aws.amazon.com/es/serverless/build-a-web-app/
 -   [Java 8](https://www.java.com/download/ie_manual.jsp) - Entorno de desarrollo
 -   [Intellij Idea](https://www.jetbrains.com/es-es/idea/download/) (Opcional)
 
+## Configuracion ralizada para los certificados
+
+
+Para la generacion de certificados, se utilizo la siguiente contraseña
+```java
+public class Password {
+    public static String keyStorePassword = "123456";
+}
+```
+
+1. Se creo una carpeta llamada keystores en la raiz del proyecto
+2. Se genero un certificado digital con el siguiente comando
+
+    ```
+    keytool -genkeypair -alias ecikeypair -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore ecikeystore.p12 -validity 3650
+    ```
+   Se debe de llenar con la siguiente informacion( de manera local)
+   ```
+   localhost-> aqui debe ir el nombre del servidor
+   AREP
+   ECI
+   Bogota
+   Bogota D.C.
+   CO
+   yes
+   ```
+   
+   <img src="./resources/images/02-KeyStore-Config.jpg" alt="02-KeyStore-Config.jpg" />
+
+3. Exportar el certificado a un archivo
+    ```
+    keytool -export -keystore ./ecikeystore.p12 -alias ecikeypair -file ecicert.cer
+    ```
+    <img src="./resources/images/03-Exporting-keystore.jpg" alt="03-Exporting-keystore.jpg" />
+
+4. Ahora importaremos el certificado a un TrusStore // el cual nos dira que certificados de las entidades debemos confiar
+  
+    ```
+    keytool -import -file ./ecicert.cer -alias firstCA -keystore myTrustStore
+    ```
+    <img src="./resources/images/04-Importing-keystore.jpg" alt="04-Importing-keystore.jpg" />
+    
 ## **Instrucciones de ejecución local**
 
 0. Desde cmd clonar el repositorio
 
-```git
-https://github.com/Rincon10/AREP-LAB03.git
-```
+    ```git
+    https://github.com/Rincon10/AREP-LAB03.git
+    ```
 
 1. Ubicarse en la carpeta AREP-LAB03 y borraremos todas las dependencias y modulos que puedan exisitir de los binarios del proyecto, ademas realizamos la compilación y empaquetamiento del proyecto, con el comando.
-```
-mvn clean install
-```
+    ```
+    mvn clean install
+    ```
 
 2. Ahora procederemos a iniciar el servidor HelloServer
 
-## Para Unix
+### Para Unix
 ```
 java -cp "target/classes:target/dependency/*" edu.escuelaing.arep.server.HelloServer
 ```
-## Para Windows
+### Para Windows
 ```
 java -cp "target/classes;target/dependency/*" edu.escuelaing.arep.server.HelloServer
 ```
