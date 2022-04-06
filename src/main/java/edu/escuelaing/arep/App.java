@@ -1,5 +1,10 @@
 package edu.escuelaing.arep;
 
+import edu.escuelaing.arep.services.IHasher;
+import edu.escuelaing.arep.services.impl.Hasher;
+
+import java.util.concurrent.ConcurrentHashMap;
+
 import static spark.Spark.*;
 
 /**
@@ -7,6 +12,27 @@ import static spark.Spark.*;
  */
 public class App {
     private static String helloPath = "/hello";
+    private static String defaultPath = "/";
+    private static IHasher hasher = new Hasher();
+    private static ConcurrentHashMap<String, String> users = new ConcurrentHashMap<>();
+
+    private static void setGetControllers() {
+        get(defaultPath, (req, res) -> {
+            res.redirect("/index.html");
+            res.status(200);
+            return null;
+        });
+
+        get(helloPath, (req, res) -> {
+            res.status(200);
+            return "Hello, world from spark.";
+        });
+    }
+
+    private static void generateUsers() {
+        users.put("Rincon10", hasher.hash("123456"));
+        users.put("test", hasher.hash("test"));
+    }
 
     /**
      * Main method, that start our Spark application
@@ -19,7 +45,14 @@ public class App {
 
         //Setting the portNumber
         port(getPort());
-        //staticFileLocation("/public");
+
+        //Fake DataBase
+        generateUsers();
+
+        // Set the file location
+        staticFileLocation("/public");
+
+        secure(getKeyStore(), "password", null, null);
 
         //After-filters are evaluated after each request, and can read the request and read/modify the response:
         // Allow CORS
@@ -39,14 +72,20 @@ public class App {
                 });
 
         before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
+
+
+        //before("/security/*", (req, res) -> isUserLoggedIn(req));
+
         // This only if we wanna have the front in resources
 //        get(defaultPath, (req, res) -> {
 //            res.redirect("/index.html");
 //            return "";
 //        });
-        get(helloPath, (req, res) -> "Hello, world from spark.");
+
+        setGetControllers();
 
     }
+
 
     /***
      * Method that returns the port number to use in our App
