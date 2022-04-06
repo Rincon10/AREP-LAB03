@@ -110,3 +110,38 @@ java -cp "target/classes;target/dependency/*" edu.escuelaing.arep.server.HelloSe
 ```maven
 mvn exec:java -Dexec.mainClass="edu.escuelaing.arep.App"
 ```
+
+4. Una vez tengamos el proyecto en ejecucion, desde nuestro navegador colocaremos la ruta
+```
+https://localhost:5000/
+```
+
+y nos saldra la siguiente ventana
+
+<img src="./resources/images/05-Login.jpg" alt="login" />
+
+Cabe recalcar que el login solo detectara los siguientes usuarios
+```java
+private static void generateUsers() {
+    users.put("Rincon10", hasher.hash("123456"));
+    users.put("test", hasher.hash("test"));
+}
+```
+
+## Usuarios no autenticados o no existentes
+
+<img src="./resources/images/06-usuario-no-existente.jpg" alt="badRequest" />
+
+<br />
+
+
+<img src="./resources/images/06-usuario-no-existente-2.jpg" alt="badRequest-2" />
+
+
+## Usuarios existentes y autenticados
+
+<img src="./resources/images/07-usuario-existente.jpg" alt="goodRequest" />
+
+<br />
+
+<img src="./resources/images/07-usuario-existente-2.jpg" alt="goodRequest-2" />
