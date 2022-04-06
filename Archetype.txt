@@ -1,0 +1,150 @@
+mvn archetype:generate -DgroupId=edu.escuelaing.arep -DartifactId=SecureApp -DarchetypeArtifactId=maven-archetype-quickstart
+
+mvn exec:java -Dexec.mainClass="edu.escuelaing.arep.reflectionsexamples.InvokeMain" -Dexec.args="packageArg"
+mvn exec:java -Dexec.mainClass="edu.escuelaing.arep.RunMyServer"
+
+web: java $JAVA_OPTS -cp target/classes:target/dependency/* edu.escuelaing.arep.RunMyServer
+
+// Las imagenes son cosas las cuales puedo generar contenedores
+
+1. Vamos a crear una imagen para que podamos subirlo a docker.
+=========================================================================
+FROM openjdk:8 //Imagen del repositorio, para ejecutar java
+
+WORKDIR /usrapp/bin // El contenedor sera para una aplicacion, y manejare este directorio
+
+ENV PORT 6000   // variable de entorno PORT
+
+COPY /target/classes /usrapp/bin/classes
+COPY /target/dependency /usrapp/bin/dependency
+
+CMD ["java","-cp","./classes:./dependency/*","edu.escuelaing.arep.App"]
+=========================================================================
+
+docker build --tag primer-docker-spark .
+
+docker build -f DockerFile . --tag primer-docker-spark
+
+docker images
+
+docker ps
+
+docker run -d -p 34000:6000 --name firstdockercontainer primer-docker-spark
+
+docker-compose up -d
+
+//En su motor de docker local cree una referencia a su imagen con el nombre del repositorio a donde desea subirla:
+
+https://hub.docker.com/
+
+
+
+docker tag primer-docker-spark:latest rincon10/firstsprkwebapprepo:latest
+
+docker images // debe de existir la nueva referencia
+
+docker login
+
+docker push rincon10/firstsprkwebapprepo:latest
+
+
+// En AWS
+
+buscamos EC2
+
+y hacemos instalacion de la imagen que tiene docker, java, etc (AMI)
+
+
+Abra un cliente SSH.
+Localice el archivo de clave privada. La clave utilizada para lanzar esta instancia es AREPLIVEDEMO.pem
+
+Ejecute este comando, si es necesario, para garantizar que la clave no se pueda ver públicamente.
+
+```
+chmod 400 AREPLIVEDEMO.pem
+```
+
+Conéctese a la instancia mediante su DNS público:
+```
+ec2-54-166-45-155.compute-1.amazonaws.com
+```
+
+Ejemplo:
+
+```
+ssh -i "AREPLIVEDEMO.pem" ec2-user@ec2-54-166-45-155.compute-1.amazonaws.com
+```
+
+Para instalar docker
+
+sudo yum update -y
+sudo yum install docker
+
+sudo service docker start
+
+sudo usermod -a -G docker ec2-user
+
+exit para que se actualicen los permisos
+
+sudo yum install java-1.8.0-openjdk
+sudo yum install java-1.8.0-openjdk-devel
+
+
+A partir de la imagen creada en Dockerhub cree una instancia de un contenedor docker independiente de la consola (opción “-d”) y con el puerto 6000 enlazado a un puerto físico de su máquina (opción -p):
+docker run -d -p 42000:6000 --name firstdockerimageaws rincon10/firstsprkwebapprepo:latest
+
+
+AHORA DEBEMOS ABRIR LOS PUERTOS DE LOS GRUPOS DE SEGURIDAD
+
+si tengo al hacer docker ps
+
+numero->numero2/tcp
+
+numero2 es el puerto de nuestro contendenedor
+numero es el puerto el cual se mapea para que nuestra maquina lo detecte
+
+en las reglas de entrada de seguridad lo configuramos con numero
+
+    © 2022 GitHub, Inc.
+
+    Terms
+    Privacy
+    Security
+    Status
+    Docs
+    Contact GitHub
+    Pricing
+    API
+    Training
+    Blog
+    About
+
+Loading complete
+
+=============================================================
+Para la generacion de certificados
+
+Pass: admin12345
+
+keytool -genkeypair -alias ecikeypair -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore ecikeystore.p12 -validity 3650
+
+localhost-> aqui debe ir el nombre del servidor
+AREP
+ECI
+Bogota
+Bogota D.C.
+co
+yes
+
+keystores mis certificados
+/API: secure(keystoreFilePath, keystorePassword, truststoreFilePath,truststorePassword);
+secure("keystores/ecikeypair.p12", "ecistore", null, null);
+
+
+
+Exportar el certificado a un archivo
+keytool -export -keystore ./ecikeystore.p12 -alias ecikeypair -file ecicert.cer
+
+Importar el certificado a un TrusStore // certificados de la entidades en quien confiamos
+keytool -import -file ./ecicert.cer -alias firstCA -keystore myTrustStore
+
